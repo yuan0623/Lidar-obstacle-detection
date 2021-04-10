@@ -10,13 +10,17 @@ project(playback)
 find_package(PCL 1.2 REQUIRED)
 
 include_directories(${PCL_INCLUDE_DIRS})
+include_directories(${CMAKE_SOURCE_DIR}/include)
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4")
 
+add_library(seg_cluster
+        ${CMAKE_SOURCE_DIR}/include/seg_cluster.h
+        ${CMAKE_SOURCE_DIR}/src/seg_cluster.cpp)
 
-add_executable (environment src/environment.cpp src/render/render.cpp src/processPointClouds.cpp)
-target_link_libraries (environment ${PCL_LIBRARIES})
+add_executable (environment src/environment.cpp src/render/render.cpp src/processPointClouds.cpp src/seg_cluster.cpp)
+target_link_libraries (environment ${PCL_LIBRARIES} seg_cluster)
 
 
 
