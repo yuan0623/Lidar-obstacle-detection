@@ -242,9 +242,9 @@ void cityBlock_Yuan(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessPoint
 
     // clustering
 
-    std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> cloudClusters = processPointClouds->Clustering(segmentCloud.first, 1.0, 3, 50);
+    //std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> cloudClusters = processPointClouds->Clustering(segmentCloud.first, 1.0, 3, 50);
     // ********************** my implementation
-    //std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> cloudClusters = Clustering(segmentCloud.first, 1.0, 3, 50);
+    std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> cloudClusters = Clustering(segmentCloud.first, 1.0, 3, 50);
     // **********************
 
 
