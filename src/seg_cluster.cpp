@@ -121,13 +121,12 @@ std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>:
 void Proximity(const pcl::PointCloud<pcl::PointXYZI>::Ptr cloud, pcl::PointCloud<pcl::PointXYZI>::Ptr cluster, std::vector<bool>& processed, int i, KdTree3D* tree, float distanceTol){
     processed[i]=true;
     pcl::PointXYZI point_lib;
-    point_lib.x = cloud->points[i+1].x;
-    point_lib.y = cloud->points[i+1].y;
-    point_lib.z = cloud->points[i+1].z;
-    point_lib.intensity = cloud->points[i+1].intensity;
+    point_lib.x = cloud->points[i].x;
+    point_lib.y = cloud->points[i].y;
+    point_lib.z = cloud->points[i].z;
+    point_lib.intensity = cloud->points[i].intensity;
 
     cluster->points.push_back(point_lib);
-    std::cout<<i<<std::endl;
     std::vector<float>  point = {cloud->points[i].x,cloud->points[i].y,cloud->points[i].z};
     std::vector<int> nearby_points = tree->search(point,distanceTol);
     for(int id:nearby_points){
@@ -149,7 +148,7 @@ void Proximity(const pcl::PointCloud<pcl::PointXYZI>::Ptr cloud, pcl::PointCloud
     }
 
 }
-std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> euclideanCluster(const pcl::PointCloud<pcl::PointXYZI>::Ptr cloud, KdTree3D* tree, float distanceTol)
+std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> euclideanCluster(const pcl::PointCloud<pcl::PointXYZI>::Ptr cloud, KdTree3D* tree, float distanceTol, int minSize, int maxSize)
 {
 
     // TODO: Fill out this function to return list of indices for each cluster
@@ -165,11 +164,14 @@ std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> euclideanCluster(const pcl::Po
             i++;
         }
         else{
-            pcl::PointCloud<pcl::PointXYZI>::Ptr cluster;
-
-
+            pcl::PointCloud<pcl::PointXYZI>::Ptr cluster(new pcl::PointCloud<pcl::PointXYZI>);
             Proximity(cloud, cluster,processed, i, tree, distanceTol);
-            clusters.push_back(cluster);
+
+            if ((cluster->size())<maxSize && cluster->size()>minSize){
+                clusters.push_back(cluster);
+            }
+
+
             i++;
         }
 
@@ -199,7 +201,7 @@ std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> Clustering(pcl::PointCloud<pcl
         point_index++;
     }
 
-    std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> clusters = euclideanCluster(cloud, tree, clusterTolerance);
+    std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> clusters = euclideanCluster(cloud, tree, clusterTolerance, minSize,maxSize);
 
 
     auto endTime = std::chrono::steady_clock::now();
